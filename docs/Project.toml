@@ -1,0 +1,6 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+GSC = "ab07a3e2-2f8a-454e-8c52-87d610591a2e"
+
+[compat]
+Documenter = "1"

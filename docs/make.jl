@@ -1,0 +1,17 @@
+using Documenter, GSC
+
+DocMeta.setdocmeta!(GSC, :DocTestSetup, :(using GSC); recursive=true)
+
+makedocs(;
+    modules=[GSC],
+    sitename="GSC.jl",
+    pages=[
+        "Home" => "index.md",
+        "API" => "api.md",
+    ],
+)
+
+deploydocs(;
+    repo="github.com/ytrakita/GSC.jl",
+    devbranch="main",
+)
