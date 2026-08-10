@@ -3,11 +3,19 @@ uuid = "ab07a3e2-2f8a-454e-8c52-87d610591a2e"
 authors = ["ytrakita <81611554+ytrakita@users.noreply.github.com>"]
 version = "0.1.0"
 
+[weakdeps]
+GameTheory = "64a4ffa8-f47c-4a47-8dad-aee7aadc3b51"
+
+[extensions]
+GSCGameTheoryExt = "GameTheory"
+
 [compat]
+GameTheory = "0.7"
 julia = "1.10"
 
 [extras]
+GameTheory = "64a4ffa8-f47c-4a47-8dad-aee7aadc3b51"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test"]
+test = ["GameTheory", "Test"]

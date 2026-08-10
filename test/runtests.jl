@@ -53,3 +53,5 @@ end
     @test issetequal(solve(G1, ItrIBR()), E1)
     @test issetequal(solve(G2, ItrIBR()), E2)
 end
+
+include("test_gametheory_ext.jl")

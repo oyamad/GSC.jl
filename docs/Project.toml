@@ -1,6 +1,8 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 GSC = "ab07a3e2-2f8a-454e-8c52-87d610591a2e"
+GameTheory = "64a4ffa8-f47c-4a47-8dad-aee7aadc3b51"
 
 [compat]
 Documenter = "1"
+GameTheory = "0.7"

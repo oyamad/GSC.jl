@@ -1,4 +1,4 @@
-# [API](@id API)
+# GSC
 
 ```@autodocs
 Modules = [GSC]
