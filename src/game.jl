@@ -70,7 +70,7 @@ julia> StrategySpace(i -> 2 * i, 3)
  Base.OneTo(6)
 ```
 """
-StrategySpace(f::F, n::Integer) where F = StrategySpace(ntuple(f, n))
+StrategySpace(f::F, n::Integer) where F = StrategySpace(ntuple(f, n)...)
 
 Base.show(io::IO, S::StrategySpace{N}) where {N} =
     print(io, "StrategySpace{$N}(", S.indices, ")")
@@ -78,7 +78,7 @@ Base.show(io::IO, S::StrategySpace{N}) where {N} =
 function Base.show(io::IO, ::MIME"text/plain", S::StrategySpace{N}) where {N}
     println(io, summary(S))
     for (i, v) in enumerate(S.indices)
-        print(" ", v)
+        print(io, " ", v)
         i == N && break
         print(io, "\n")
     end
