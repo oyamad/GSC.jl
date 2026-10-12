@@ -7,7 +7,8 @@ to find all equilibria in games of strategic complements.
 ## GameTheory.jl interface
 
 When [GameTheory.jl](https://github.com/QuantEcon/GameTheory.jl) is loaded,
-all pure Nash equilibria of a `GameTheory.NormalFormGame` can be computed
+all pure Nash equilibria of a normal form game from GameTheory.jl can be
+computed
 with `solve` by Echenique's algorithm as implemented by GSC.jl:
 
 ```jldoctest
@@ -26,4 +27,4 @@ julia> solve(g, ItrIBR())
  (4, 4)
 ```
 
-Strategies are the 1-based action indices of the `NormalFormGame`.
+Strategies are the 1-based action indices of the game.

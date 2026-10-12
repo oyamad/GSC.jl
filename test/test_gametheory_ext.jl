@@ -1,4 +1,4 @@
-using GameTheory: GameTheory, NormalFormGame, pure_nash
+using GameTheory: GameTheory, AbstractNormalFormGame, NormalFormGame, pure_nash
 
 # NormalFormGame whose payoff to player i at full action profile a is F(i, a),
 # following GameTheory's convention that the axes of player i's payoff array
@@ -16,6 +16,15 @@ function gt_game(F, nums_actions::NTuple{N,Int}) where N
     end
     return NormalFormGame(players)
 end
+
+# The same game defined by its payoff function
+struct RulesGame{N,F} <: AbstractNormalFormGame{N,Float64}
+    F::F
+    nums_actions::NTuple{N,Int}
+end
+GameTheory.nums_actions(g::RulesGame) = g.nums_actions
+GameTheory.payoff_profile(g::RulesGame{N}, a) where {N} =
+    ntuple(i -> g.F(i, a), Val(N))
 
 # Belhaj-Bramoulle-Deroian (2014) network game, discretized:
 # u_i(x) = x_i * (a[i] + lambda * sum_j g[i,j] * x_j) - x_i^2 / 2,
@@ -36,17 +45,39 @@ function bbd_game(g::AbstractMatrix, a::AbstractVector, lambda::Real,
     return NormalFormGame(players)
 end
 
+# The same game defined by its payoff function
+struct BBDGame{N,TG<:AbstractMatrix,TA<:AbstractVector} <:
+        AbstractNormalFormGame{N,Float64}
+    g::TG
+    a::TA
+    lambda::Float64
+    grid::Vector{Float64}
+end
+BBDGame(g, a, lambda, L, K, ::Val{N}) where {N} =
+    BBDGame{N,typeof(g),typeof(a)}(g, a, lambda, collect(range(0, L, length=K+1)))
+GameTheory.nums_actions(g::BBDGame{N}) where {N} =
+    ntuple(_ -> length(g.grid), Val(N))
+function GameTheory.payoff_profile(g::BBDGame{N}, a) where {N}
+    x = ntuple(j -> g.grid[a[j]], Val(N))
+    return ntuple(Val(N)) do i
+        s = sum(g.g[i, j] * x[j] for j in 1:N)
+        x[i] * (g.a[i] + g.lambda * s) - x[i]^2 / 2
+    end
+end
+
 @testset "GSCGameTheoryExt" begin
     @testset "Conversion, $N players" for N in 2:5
         # Distinct action counts, so that axis mixups throw or mismatch
         nums = ntuple(j -> j + 1, N)
         F(i, a) = sum(a[j] * 10.0^(j-1) for j in 1:N) + 1000.0 * i
-        G = @inferred Game(gt_game(F, nums))
-        @test all(
-            G[i](a[i], StrategyProfile(m -> a[m + (m >= i)], N-1)) ==
-                F(i, Tuple(a))
-            for a in CartesianIndices(nums), i in 1:N
-        )
+        for G in (@inferred(Game(gt_game(F, nums))),
+                  @inferred(Game(RulesGame(F, nums))))
+            @test all(
+                G[i](a[i], StrategyProfile(m -> a[m + (m >= i)], N-1)) ==
+                    F(i, Tuple(a))
+                for a in CartesianIndices(nums), i in 1:N
+            )
+        end
     end
 
     @testset "BBD network game" begin
@@ -68,5 +99,13 @@ end
         # solve with ItrIBR is not inference-clean in GSC itself
         @test issetequal(
             [Tuple(e.data) for e in solve(nfg, ItrIBR())], E)
+
+        # The same game defined by its payoff function, with no payoff array
+        rules = BBDGame([0 1 1; 1 0 1; 1 1 0], [0.05, 0.02, -0.55], 0.8, 1, K,
+                        Val(3))
+        @test issetequal(
+            [Tuple(e.data) for e in @inferred solve(rules, BruteForce())], E)
+        @test issetequal(
+            [Tuple(e.data) for e in solve(rules, ItrIBR())], E)
     end
 end
