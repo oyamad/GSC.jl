@@ -1,8 +1,9 @@
 # GameTheory.jl extension
 
 When [GameTheory.jl](https://github.com/QuantEcon/GameTheory.jl) is loaded,
-all pure Nash equilibria of a normal form game from GameTheory.jl can be
-computed with `solve` by Echenique's algorithm as implemented by GSC.jl:
+all pure Nash equilibria of a normal form game `g` from GameTheory.jl can be
+computed with `solve(g, ItrIBR())` by Echenique's algorithm as implemented by
+GSC.jl:
 
 ```jldoctest
 julia> using GSC, GameTheory
@@ -14,10 +15,13 @@ julia> g = NormalFormGame(
             (0, 0) (0, 0) (0, 0) (0, 0)]
        );
 
-julia> solve(g, ItrIBR())
+julia> NEs = solve(g, ItrIBR())
 2-element Vector{StrategyProfile{2, Tuple{Int64, Int64}}}:
  (1, 1)
  (4, 4)
+
+julia> all([is_nash(g, NE.data) for NE in NEs])
+true
 ```
 
 Strategies are the 1-based action indices of the game.

@@ -51,8 +51,11 @@ Return the vector of all pure Nash equilibria of a normal form game `g` of
 GameTheory.jl, a `NormalFormGame` or any `AbstractNormalFormGame`, by
 algorithm `algo`, as `StrategyProfile`s of action indices. Equivalent to
 `solve(Game(g), algo, r)`.
+
+`algo` is either `ItrIBR()`, the iterated best reply algorithm of Echenique
+(2007), or `BruteForce()`. If `r` is set positive, `r`th order recursive
+version of the algorithm is used.
 """
 GSC.solve(g::AbstractNormalFormGame, algo::GSCAlgorithm, r::Int=0) =
     solve(Game(g), algo, r)
-
 end
